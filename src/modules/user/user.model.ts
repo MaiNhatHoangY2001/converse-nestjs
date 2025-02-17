@@ -1,4 +1,4 @@
-import { UserRole } from 'src/shared/interface';
+import { UserRole } from '@prisma/client';
 import { z } from 'zod';
 
 export enum Status {

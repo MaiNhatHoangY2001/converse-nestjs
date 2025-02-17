@@ -1,16 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { AppError, ErrForbidden, ErrNotFound } from 'src/shared';
-import { ITokenProvider, Requester, TokenPayload, UserRole } from 'src/shared/interface';
+import { AppError, ErrForbidden, ErrNotFound, UserRole } from 'src/shared';
+import { ITokenProvider, Requester, TokenPayload } from 'src/shared/interface';
 import { v7 } from 'uuid';
 import { TOKEN_PROVIDER, USER_REPOSITORY } from './user.di-token';
-import {
-  UserLoginDTO,
-  UserRegistrationDTO,
-  UserUpdateDTO,
-  userRegistrationDTOSchema,
-  userUpdateDTOSchema,
-} from './user.dto';
+import { UserUpdateDTO, userUpdateDTOSchema } from './user.dto';
 import {
   ErrInvalidToken,
   ErrInvalidUsernameAndPassword,
@@ -20,6 +14,8 @@ import {
   User,
 } from './user.model';
 
+import { CreateUserDto } from './dto/create-user.dto';
+import { UserLoginDTO } from './dto/user-action.dto';
 import { IUserRepository, IUserService } from './user.port';
 
 @Injectable()
@@ -29,8 +25,8 @@ export class UserService implements IUserService {
     @Inject(TOKEN_PROVIDER) private readonly tokenProvider: ITokenProvider,
   ) {}
 
-  async register(dto: UserRegistrationDTO): Promise<string> {
-    const data = userRegistrationDTOSchema.parse(dto);
+  async register(dto: CreateUserDto): Promise<string> {
+    const data = dto;
 
     // 1. Check username existed
     const user = await this.userRepo.findByCond({ username: data.username });
@@ -77,8 +73,8 @@ export class UserService implements IUserService {
     }
 
     // 3. Return token
-    const role = user.role;
-    const token = await this.tokenProvider.generateToken({ sub: user.id, role });
+    const role = user.role === UserRole.USER ? UserRole.USER : UserRole.ADMIN;
+    const token = await this.tokenProvider.generateToken({ sub: user.id, role: role });
     return token;
   }
 
@@ -104,7 +100,7 @@ export class UserService implements IUserService {
 
     return {
       sub: user.id,
-      role: user.role,
+      role: user.role === UserRole.USER ? UserRole.USER : UserRole.ADMIN,
     };
   }
 

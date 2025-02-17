@@ -1,9 +1,11 @@
 import { Requester, TokenPayload } from 'src/shared/interface';
-import { UserCondDTO, UserLoginDTO, UserRegistrationDTO, UserUpdateDTO } from './user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UserLoginDTO } from './dto/user-action.dto';
+import { UserCondDTO, UserUpdateDTO } from './user.dto';
 import { User } from './user.model';
 
 export interface IUserService {
-  register(dto: UserRegistrationDTO): Promise<string>;
+  register(dto: CreateUserDto): Promise<string>;
   login(dto: UserLoginDTO): Promise<string>;
   profile(userId: string): Promise<Omit<User, 'password' | 'salt'>>;
   update(requester: Requester, userId: string, dto: UserUpdateDTO): Promise<void>;

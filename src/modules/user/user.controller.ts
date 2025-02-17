@@ -1,25 +1,28 @@
-import { USER_REPOSITORY, USER_SERVICE } from './user.di-token';
 import {
-  Controller,
-  Post,
   Body,
-  Inject,
+  Controller,
+  Delete,
+  Get,
   HttpCode,
   HttpStatus,
-  Get,
-  Request,
-  Delete,
+  Inject,
   Param,
   Patch,
+  Post,
+  Request,
   UseGuards,
 } from '@nestjs/common';
-import { IUserRepository, IUserService } from './user.port';
 import { Request as ExpressRequest } from 'express';
-import { UserLoginDTO, UserRegistrationDTO, UserUpdateDTO, UserUpdateProfileDTO } from './user.dto';
-import { ErrInvalidToken, User } from './user.model';
+import { UserRole } from 'src/shared';
 import { AppError, ErrNotFound } from 'src/shared/app-error';
-import { ReqWithRequester, UserRole } from 'src/shared/interface';
 import { RemoteAuthGuard, Roles, RolesGuard } from 'src/shared/guard';
+import { ReqWithRequester } from 'src/shared/interface';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UserLoginDTO } from './dto/user-action.dto';
+import { USER_REPOSITORY, USER_SERVICE } from './user.di-token';
+import { UserUpdateDTO, UserUpdateProfileDTO } from './user.dto';
+import { ErrInvalidToken, User } from './user.model';
+import { IUserRepository, IUserService } from './user.port';
 
 @Controller()
 export class UserController {
@@ -27,7 +30,7 @@ export class UserController {
 
   @Post('register')
   @HttpCode(HttpStatus.OK)
-  async register(@Body() dto: UserRegistrationDTO) {
+  async register(@Body() dto: CreateUserDto) {
     const data = await this.userService.register(dto);
     return { data };
   }

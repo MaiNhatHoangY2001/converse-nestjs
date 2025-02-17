@@ -1,4 +1,5 @@
 import { AppEvent, PublicUser } from './data-model';
+import { UserRole } from './enum';
 
 export interface TokenPayload {
   sub: string;
@@ -22,11 +23,6 @@ export type TokenIntrospectResult = {
 
 export interface ITokenIntrospect {
   introspect(token: string): Promise<TokenIntrospectResult>;
-}
-
-export enum UserRole {
-  ADMIN = 'admin',
-  USER = 'user',
 }
 
 export interface ITokenProvider {

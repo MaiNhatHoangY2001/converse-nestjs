@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
-import { IPublicUserRpc } from '../interface';
 import { PublicUser } from '../data-model';
+import { IPublicUserRpc } from '../interface';
 
 @Injectable()
 export class UserRPCClient implements IPublicUserRpc {

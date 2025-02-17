@@ -1,7 +1,3 @@
-// dotenv.config({
-//   path: process.env.NODE_ENV === 'production' ? '.env' : `.env.${process.env.NODE_ENV}`,
-// });
-
 const port = process.env.PORT || '3000';
 
 export const config = {
