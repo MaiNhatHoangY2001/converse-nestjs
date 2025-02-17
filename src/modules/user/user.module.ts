@@ -12,11 +12,14 @@ const repositories: Provider[] = [{ provide: USER_REPOSITORY, useClass: UserPris
 const services: Provider[] = [{ provide: USER_SERVICE, useClass: UserService }];
 
 const tokenJWTProvider = new JwtTokenService(config.rpc.jwtSecret, '7d');
-const tokenProvider: Provider = { provide: TOKEN_PROVIDER, useValue: tokenJWTProvider };
+const tokenProvider: Provider = {
+	provide: TOKEN_PROVIDER,
+	useValue: tokenJWTProvider,
+};
 
 @Module({
-  imports: [ShareModule],
-  controllers: [UserController, UserRpcController],
-  providers: [...repositories, ...services, tokenProvider],
+	imports: [ShareModule],
+	controllers: [UserController, UserRpcController],
+	providers: [...repositories, ...services, tokenProvider],
 })
 export class UserModule {}

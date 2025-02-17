@@ -5,14 +5,14 @@ import { AppService } from './app.service';
 import { UserModule } from './modules/user/user.module';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: process.env.NODE_ENV === 'development' ? '.env.dev' : '.env',
-    }),
-    UserModule,
-  ],
-  controllers: [AppController],
-  providers: [AppService],
+	imports: [
+		ConfigModule.forRoot({
+			isGlobal: true,
+			envFilePath: process.env.NODE_ENV === 'development' ? '.env.dev' : '.env',
+		}),
+		UserModule,
+	],
+	controllers: [AppController],
+	providers: [AppService],
 })
 export class AppModule {}

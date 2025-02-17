@@ -2,42 +2,42 @@ import { AppEvent, PublicUser } from './data-model';
 import { UserRole } from './enum';
 
 export interface TokenPayload {
-  sub: string;
-  role: UserRole;
+	sub: string;
+	role: UserRole;
 }
 
 export type Requester = TokenPayload;
 
 export interface ReqWithRequester {
-  requester: Requester;
+	requester: Requester;
 }
 export interface ReqWithRequesterOpt {
-  requester?: Requester;
+	requester?: Requester;
 }
 
 export type TokenIntrospectResult = {
-  payload: TokenPayload | null;
-  error?: Error;
-  isOk: boolean;
+	payload: TokenPayload | null;
+	error?: Error;
+	isOk: boolean;
 };
 
 export interface ITokenIntrospect {
-  introspect(token: string): Promise<TokenIntrospectResult>;
+	introspect(token: string): Promise<TokenIntrospectResult>;
 }
 
 export interface ITokenProvider {
-  // generate access token
-  generateToken(payload: TokenPayload): Promise<string>;
-  verifyToken(token: string): Promise<TokenPayload | null>;
+	// generate access token
+	generateToken(payload: TokenPayload): Promise<string>;
+	verifyToken(token: string): Promise<TokenPayload | null>;
 }
 
 export interface IAuthorRpc {
-  findById(id: string): Promise<PublicUser | null>;
-  findByIds(ids: Array<string>): Promise<Array<PublicUser>>;
+	findById(id: string): Promise<PublicUser | null>;
+	findByIds(ids: Array<string>): Promise<Array<PublicUser>>;
 }
 
 export interface IEventPublisher {
-  publish<T>(event: AppEvent<T>): Promise<void>;
+	publish<T>(event: AppEvent<T>): Promise<void>;
 }
 
 export type EventHandler = (msg: string) => void;

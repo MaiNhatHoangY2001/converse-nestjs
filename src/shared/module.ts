@@ -6,26 +6,26 @@ import { TokenIntrospectRPCClient, UserRPCClient } from './rpc';
 
 const tokenRPCClient = new TokenIntrospectRPCClient(config.rpc.introspectUrl);
 const tokenIntrospector: Provider = {
-  provide: TOKEN_INTROSPECTOR,
-  useValue: tokenRPCClient,
+	provide: TOKEN_INTROSPECTOR,
+	useValue: tokenRPCClient,
 };
 
 const userRPCClient = new UserRPCClient(config.rpc.userServiceURL);
 const userRPC: Provider = {
-  provide: USER_RPC,
-  useValue: userRPCClient,
+	provide: USER_RPC,
+	useValue: userRPCClient,
 };
 
 const redisClient: Provider = {
-  provide: EVENT_PUBLISHER,
-  useFactory: async () => {
-    await RedisClient.init(config.redis.url);
-    return RedisClient.getInstance();
-  },
+	provide: EVENT_PUBLISHER,
+	useFactory: async () => {
+		await RedisClient.init(config.redis.url);
+		return RedisClient.getInstance();
+	},
 };
 
 @Module({
-  providers: [tokenIntrospector, userRPC, redisClient],
-  exports: [tokenIntrospector, userRPC, redisClient],
+	providers: [tokenIntrospector, userRPC, redisClient],
+	exports: [tokenIntrospector, userRPC, redisClient],
 })
 export class ShareModule {}
