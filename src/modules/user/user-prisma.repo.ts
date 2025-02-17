@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { User as UserPrisma } from '@prisma/client';
+import { Status } from '@shared/enum';
 import prisma from 'src/shared/components/prisma';
-import { UserCondDTO, UserUpdateDTO } from './user.dto';
-import { Status, User } from './user.model';
+import { UserUpdateDto } from './dto/user-action.dto';
+import { UserCondDTO } from './user.dto';
+import { User } from './user.model';
 import { IUserRepository } from './user.port';
 
 @Injectable()
@@ -29,7 +31,7 @@ export class UserPrismaRepository implements IUserRepository {
 		return data.map((userPrisma: UserPrisma) => this._toModel(userPrisma));
 	}
 
-	async update(id: string, dto: UserUpdateDTO): Promise<void> {
+	async update(id: string, dto: UserUpdateDto): Promise<void> {
 		await prisma.user.update({ where: { id }, data: dto });
 	}
 

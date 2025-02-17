@@ -1,6 +1,6 @@
 const port = process.env.PORT || '3000';
 
-export const config = {
+export const config = () => ({
 	envName: process.env.NODE_ENV,
 	port,
 	jwtSecret: process.env.JWT_SECRET_KEY || '200L@b.io',
@@ -33,4 +33,4 @@ export const config = {
 		cdn: process.env.CDN_URL || `http://localhost:${port}/uploads`,
 	},
 	dbURL: `postgresql://200lab:200lab_secret@localhost:5432/bento-social?connection_limit=50`,
-};
+});

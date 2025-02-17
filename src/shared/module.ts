@@ -1,30 +1,41 @@
+import { HttpService } from '@nestjs/axios';
 import { Module, Provider } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { RedisClient } from './components';
-import { config } from './config';
 import { EVENT_PUBLISHER, TOKEN_INTROSPECTOR, USER_RPC } from './di-token';
 import { TokenIntrospectRPCClient, UserRPCClient } from './rpc';
 
-const tokenRPCClient = new TokenIntrospectRPCClient(config.rpc.introspectUrl);
 const tokenIntrospector: Provider = {
 	provide: TOKEN_INTROSPECTOR,
-	useValue: tokenRPCClient,
+	useFactory: (configService: ConfigService, httpService: HttpService) => {
+		const introspectUrl = configService.get<string>('rpc.introspectUrl');
+		return new TokenIntrospectRPCClient(introspectUrl as string, httpService);
+	},
+	inject: [ConfigService],
 };
 
-const userRPCClient = new UserRPCClient(config.rpc.userServiceURL);
 const userRPC: Provider = {
 	provide: USER_RPC,
-	useValue: userRPCClient,
+	useFactory: (configService: ConfigService) => {
+		const userServiceURL = configService.get<string>('rpc.userServiceURL');
+		return new UserRPCClient(userServiceURL as string);
+	},
+	inject: [ConfigService],
 };
 
 const redisClient: Provider = {
 	provide: EVENT_PUBLISHER,
-	useFactory: async () => {
-		await RedisClient.init(config.redis.url);
+	useFactory: async (configService: ConfigService) => {
+		const redisUrl = configService.get<string>('redis.url');
+		await RedisClient.init(redisUrl as string);
 		return RedisClient.getInstance();
 	},
+	inject: [ConfigService],
 };
 
 @Module({
+	// If ConfigModule isn't global, ensure you import it here:
+	// imports: [ConfigModule],
 	providers: [tokenIntrospector, userRPC, redisClient],
 	exports: [tokenIntrospector, userRPC, redisClient],
 })

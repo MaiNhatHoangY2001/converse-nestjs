@@ -1,17 +1,21 @@
-import { Injectable } from '@nestjs/common';
-import axios from 'axios';
-import { ITokenIntrospect, TokenIntrospectResult } from '../interface';
+import { HttpService } from '@nestjs/axios';
+import { Injectable, Logger } from '@nestjs/common';
+import { ITokenIntrospect, TokenIntrospectResult } from '@shared/interface';
+import { lastValueFrom } from 'rxjs';
 
-// 200Lab Note: we might use HTTP Module of NestJS instead of axios directly
-// but for now, we use axios to make it simple
 @Injectable()
 export class TokenIntrospectRPCClient implements ITokenIntrospect {
-	constructor(private readonly url: string) {}
+	constructor(
+		private readonly url: string,
+		private readonly httpService: HttpService,
+	) {}
 
 	async introspect(token: string): Promise<TokenIntrospectResult> {
 		try {
-			const { data } = await axios.post(`${this.url}`, { token });
-			const { sub, role } = data.data;
+			Logger.debug(token);
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			const response = await lastValueFrom(this.httpService.post(this.url, { token }));
+			const { sub, role } = response.data;
 			return {
 				payload: { sub, role },
 				isOk: true,

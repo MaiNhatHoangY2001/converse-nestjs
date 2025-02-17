@@ -12,15 +12,16 @@ import {
 	Request,
 	UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+import { TokenIntrospectDto } from '@shared/rpc/token-introspect.dto';
 import { Request as ExpressRequest } from 'express';
 import { UserRole } from 'src/shared';
 import { AppError, ErrNotFound } from 'src/shared/app-error';
 import { RemoteAuthGuard, Roles, RolesGuard } from 'src/shared/guard';
 import { ReqWithRequester } from 'src/shared/interface';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserLoginDTO } from './dto/user-action.dto';
+import { UserLoginDTO, UserUpdateDto } from './dto/user-action.dto';
 import { USER_REPOSITORY, USER_SERVICE } from './user.di-token';
-import { UserUpdateDTO, UserUpdateProfileDTO } from './user.dto';
 import { ErrInvalidToken, User } from './user.model';
 import { IUserRepository, IUserService } from './user.port';
 
@@ -43,6 +44,7 @@ export class UserController {
 	}
 
 	@Get('profile')
+	@ApiBearerAuth()
 	@HttpCode(HttpStatus.OK)
 	async profile(@Request() req: ExpressRequest) {
 		const [type, token] = req.headers.authorization?.split(' ') ?? [];
@@ -56,9 +58,10 @@ export class UserController {
 	}
 
 	@Patch('profile')
+	@ApiBearerAuth()
 	@UseGuards(RemoteAuthGuard)
 	@HttpCode(HttpStatus.OK)
-	async updateProfile(@Request() req: ReqWithRequester, @Body() dto: UserUpdateProfileDTO) {
+	async updateProfile(@Request() req: ReqWithRequester, @Body() dto: UserUpdateDto) {
 		const requester = req.requester;
 		await this.userService.update(requester, requester.sub, dto);
 		return { data: true };
@@ -66,12 +69,13 @@ export class UserController {
 
 	@Patch('users/:id')
 	@UseGuards(RemoteAuthGuard, RolesGuard)
+	@ApiBearerAuth()
 	@Roles(UserRole.ADMIN)
 	@HttpCode(HttpStatus.OK)
 	async updateUser(
 		@Request() req: ReqWithRequester,
 		@Param('id') id: string,
-		@Body() dto: UserUpdateDTO,
+		@Body() dto: UserUpdateDto,
 	) {
 		// 200Lab TODO: can be omitted, because we already check in guards
 		const requester = req.requester;
@@ -99,6 +103,7 @@ export class UserRpcController {
 	) {}
 
 	@Post('introspect')
+	@ApiBody({ type: TokenIntrospectDto })
 	@HttpCode(HttpStatus.OK)
 	async introspect(@Body() dto: { token: string }) {
 		const result = await this.userService.introspectToken(dto.token);

@@ -1,21 +1,19 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { AppError, ErrForbidden, ErrNotFound, UserRole } from 'src/shared';
+import { AppError, ErrForbidden, ErrNotFound, Status, UserRole } from 'src/shared';
 import { ITokenProvider, Requester, TokenPayload } from 'src/shared/interface';
 import { v7 } from 'uuid';
 import { TOKEN_PROVIDER, USER_REPOSITORY } from './user.di-token';
-import { UserUpdateDTO, userUpdateDTOSchema } from './user.dto';
 import {
 	ErrInvalidToken,
 	ErrInvalidUsernameAndPassword,
 	ErrUserInactivated,
 	ErrUsernameExisted,
-	Status,
 	User,
 } from './user.model';
 
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserLoginDTO } from './dto/user-action.dto';
+import { UserLoginDTO, UserUpdateDto } from './dto/user-action.dto';
 import { IUserRepository, IUserService } from './user.port';
 
 @Injectable()
@@ -119,12 +117,12 @@ export class UserService implements IUserService {
 		return rest;
 	}
 
-	async update(requester: Requester, userId: string, dto: UserUpdateDTO): Promise<void> {
+	async update(requester: Requester, userId: string, dto: UserUpdateDto): Promise<void> {
 		if (requester.role !== UserRole.ADMIN && requester.sub !== userId) {
 			throw AppError.from(ErrForbidden, 400);
 		}
 
-		const data = userUpdateDTOSchema.parse(dto);
+		const data = dto;
 
 		const user = await this.userRepo.get(userId);
 		if (!user) {

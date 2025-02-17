@@ -1,5 +1,5 @@
 import { Module, Provider } from '@nestjs/common';
-import { config } from 'src/shared';
+import { ConfigService } from '@nestjs/config';
 import { JwtTokenService } from 'src/shared/components/jwt';
 import { ShareModule } from 'src/shared/module';
 import { UserPrismaRepository } from './user-prisma.repo';
@@ -11,10 +11,13 @@ const repositories: Provider[] = [{ provide: USER_REPOSITORY, useClass: UserPris
 
 const services: Provider[] = [{ provide: USER_SERVICE, useClass: UserService }];
 
-const tokenJWTProvider = new JwtTokenService(config.rpc.jwtSecret, '7d');
 const tokenProvider: Provider = {
 	provide: TOKEN_PROVIDER,
-	useValue: tokenJWTProvider,
+	useFactory: (configService: ConfigService) => {
+		const tokenJWT = configService.get<string>('rpc.jwtSecret');
+		return new JwtTokenService(tokenJWT as string, '7d');
+	},
+	inject: [ConfigService],
 };
 
 @Module({

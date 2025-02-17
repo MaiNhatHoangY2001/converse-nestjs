@@ -1,13 +1,6 @@
 import { UserRole } from '@prisma/client';
+import { Status } from '@shared/enum';
 import { z } from 'zod';
-
-export enum Status {
-	ACTIVE = 'active',
-	PENDING = 'pending',
-	INACTIVE = 'inactive',
-	BANNED = 'banned',
-	DELETED = 'deleted',
-}
 
 export enum Gender {
 	MALE = 'male',

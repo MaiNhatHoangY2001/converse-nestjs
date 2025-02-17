@@ -1,3 +1,4 @@
+import { TOKEN_PROVIDER } from '@modules/user/user.di-token';
 import {
 	CanActivate,
 	ExecutionContext,
@@ -6,13 +7,13 @@ import {
 	UnauthorizedException,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { ErrTokenInvalid } from '../app-error';
-import { REMOTE_AUTH_GUARD, TOKEN_INTROSPECTOR } from '../di-token';
-import { ITokenIntrospect } from '../interface';
+import { REMOTE_AUTH_GUARD } from '../di-token';
+import { ITokenProvider } from '../interface';
 
 @Injectable()
 export class RemoteAuthGuard implements CanActivate {
-	constructor(@Inject(TOKEN_INTROSPECTOR) private readonly introspector: ITokenIntrospect) {}
+	constructor(@Inject(TOKEN_PROVIDER) private readonly tokenProvider: ITokenProvider) {}
+	// constructor(@Inject(TOKEN_INTROSPECTOR) private readonly introspector: ITokenIntrospect) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const request = context.switchToHttp().getRequest<Request>();
@@ -22,11 +23,12 @@ export class RemoteAuthGuard implements CanActivate {
 		}
 
 		try {
-			const { payload, error, isOk } = await this.introspector.introspect(token);
+			// const { payload, error, isOk } = await this.introspector.introspect(token);
+			// if (!isOk) {
+			// 	throw ErrTokenInvalid.withLog('Token parse failed').withLog(error!.message);
+			// }
 
-			if (!isOk) {
-				throw ErrTokenInvalid.withLog('Token parse failed').withLog(error!.message);
-			}
+			const payload = await this.tokenProvider.verifyToken(token);
 
 			request['requester'] = payload;
 		} catch {
